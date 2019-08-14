@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'fr.melchiore.tools'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://packages.atlassian.com/maven/repository/public/'
+    }
+}
+
+dependencies {
+    compile 'org.asciidoctor:asciidoctorj:1.6.0'
+    compile 'com.vladsch.flexmark:flexmark-all:0.40.32'
+}
