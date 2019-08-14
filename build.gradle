@@ -15,6 +15,6 @@ repositories {
 }
 
 dependencies {
-    compile 'org.asciidoctor:asciidoctorj:1.6.0'
+    compile 'org.asciidoctor:asciidoctorj:2.1.0'
     compile 'com.vladsch.flexmark:flexmark-all:0.40.32'
 }
