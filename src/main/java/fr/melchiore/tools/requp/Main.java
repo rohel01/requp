@@ -1,63 +1,26 @@
 package fr.melchiore.tools.requp;
 
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.ast.*;
-
+import com.google.common.collect.Multimap;
+import freemarker.template.TemplateModelException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, TemplateModelException {
 
-        File file = new File(args[0]);
+    String inDirectory = args[0];
+    String pattern = args[1];
+    String outDirectory = args[2];
 
-        System.setProperty("jruby.compat.version", "RUBY1_9");
-        System.setProperty("jruby.compile.mode", "OFF");
-        Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+    System.out.println(Arrays.asList(args));
 
-        Document document = asciidoctor.loadFile(file, Collections.emptyMap());
+    Multimap<Path, Requirement> results = LegacyAsciidocParser.from(inDirectory, pattern);
 
-        // In legacy documents, requirements are top level sections
-        List<Section> blocks = document.getBlocks().stream()
-                .filter(Section.class::isInstance)
-                .map(Section.class::cast)
-                .filter(section -> section.hasAttribute("ref") && section.hasAttribute("summary"))
-                .collect(Collectors.toList());
-
-        System.out.println(blocks);
-
-        for (Section block : blocks) {
-
-            String ref = (String) block.getAttribute("ref");
-            String summary = (String) block.getAttribute("summary");
-            String[] subsystem = ((String) block.getAttribute("subsystem", "")).split(",\\s?");
-            String verification = (String) block.getAttribute("verification");
-
-            System.out.println("ref: " + ref);
-            System.out.println("summary: " + summary);
-            System.out.println("subsystem: " + String.join(", ", subsystem));
-            System.out.println("verification: " + verification);
-            System.out.println("content: " + block.getContent());
-            System.out.println("subblocks: " + block.getBlocks());
-
-            block.getBlocks().forEach(b -> {
-                System.out.println("\t" + b.getContext());
-                System.out.println("\t" + b.getCaption());
-                System.out.println("\t" + b.getContent());
-
-                if(b instanceof Table) {
-                    Table t = (Table) b;
-                    System.out.println("\tTable:" + t.getFrame());
-                    System.out.println("\tTable:" + t.getGrid());
-                    System.out.println("\tTable:" + t.getReftext());
-                    System.out.println("\tTable:" + t.getId());
-                }
-            });
-
-        }
-    }
+    AsciidocWriter.generate(results, Paths.get(inDirectory), Paths.get(outDirectory));
+  }
 }

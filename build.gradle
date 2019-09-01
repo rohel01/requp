@@ -10,11 +10,16 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     maven {
-        url 'https://packages.atlassian.com/maven/repository/public/'
+        url = 'https://heisluft.tk/maven/'
     }
 }
 
 dependencies {
+    compile 'com.google.guava:guava:28.0-jre'
+    compile 'org.slf4j:slf4j-api:1.7.28'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.asciidoctor:asciidoctorj:2.1.0'
-    compile 'com.vladsch.flexmark:flexmark-all:0.40.32'
+    compile 'org.freemarker:freemarker:2.3.29'
+    compile 'com.github.zafarkhaja:java-semver:0.10.0'
+    //compile 'com.vladsch.flexmark:flexmark-all:0.40.32'
 }
