@@ -162,12 +162,14 @@ public class AsciidocParser {
     assert fifthCells.size() == 2;
     Cell noteCell = fifthCells.get(1);
 
-    List<StructuralNode> satisfyBlocks = satisfyCell.getInnerDocument().getBlocks();
-    assert satisfyBlocks.size() == 1;
-
     List<String> satisfies = new ArrayList<>();
-    org.asciidoctor.ast.List satisfyList = (org.asciidoctor.ast.List) satisfyBlocks.get(0);
-    satisfyList.getItems().forEach(sn -> satisfies.add(((ListItem) sn).getText()));
+
+    List<StructuralNode> satisfyBlocks = satisfyCell.getInnerDocument().getBlocks();
+    if(!satisfyBlocks.isEmpty()) {
+      assert satisfyBlocks.size() == 1;
+      org.asciidoctor.ast.List satisfyList = (org.asciidoctor.ast.List) satisfyBlocks.get(0);
+      satisfyList.getItems().forEach(sn -> satisfies.add(((ListItem) sn).getText()));
+    }
 
     String note = noteCell.getText();
 
