@@ -1,4 +1,4 @@
-package fr.melchiore.tools.requp;
+package fr.melchiore.tools.requp.data;
 
 import java.util.*;
 

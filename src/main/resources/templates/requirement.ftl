@@ -1,7 +1,7 @@
-<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.Requirement>" -->
+<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.data.Requirement>" -->
 
 <#macro requirement req>
-<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.Requirement" -->
+<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.data.Requirement" -->
 :ref: ${req.ref}
 :summary: ${req.summary}
 :subsystem: ${req.subsystems?join(", ")}

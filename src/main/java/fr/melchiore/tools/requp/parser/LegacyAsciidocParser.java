@@ -1,10 +1,13 @@
-package fr.melchiore.tools.requp;
+package fr.melchiore.tools.requp.parser;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Streams;
+import fr.melchiore.tools.requp.data.Compliance;
+import fr.melchiore.tools.requp.data.Requirement;
+import fr.melchiore.tools.requp.data.Verification;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;

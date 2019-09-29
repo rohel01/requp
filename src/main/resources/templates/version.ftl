@@ -1,8 +1,8 @@
-<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.Requirement>" -->
+<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.data.Requirement>" -->
 <#-- @ftlvariable name="versions" type="java.util.List<com.github.zafarkhaja.semver.Version>" -->
 
 <#macro requirement req versions>
-<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.Requirement" -->
+<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.data.Requirement" -->
 <#-- @ftlvariable name="versions" type="java.util.List<com.github.zafarkhaja.semver.Version>" -->
 |${req.ref}: ${req.summary}
   <#if req.target?trim?length == 0 >

@@ -1,9 +1,9 @@
-<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.Requirement>" -->
-<#-- @ftlvariable name="verification" type="fr.melchiore.tools.requp.Verification" -->
+<#-- @ftlvariable name="requirements" type="java.util.List<fr.melchiore.tools.requp.data.Requirement>" -->
+<#-- @ftlvariable name="verification" type="fr.melchiore.tools.requp.data.Verification" -->
 
 <#macro requirement req verif>
-<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.Requirement" -->
-<#-- @ftlvariable name="verif" type="fr.melchiore.tools.requp.Verification" -->
+<#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.data.Requirement" -->
+<#-- @ftlvariable name="verif" type="fr.melchiore.tools.requp.data.Verification" -->
 |${req.ref}: ${req.summary}
   <#if req.verification?size == 0>
 4+^|icon:question[]
