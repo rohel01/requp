@@ -1,26 +1,35 @@
 package fr.melchiore.tools.requp;
 
-import com.google.common.collect.Multimap;
-import freemarker.template.TemplateModelException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import fr.melchiore.tools.requp.cmd.Iadt;
+import fr.melchiore.tools.requp.cmd.Migrate;
+import fr.melchiore.tools.requp.cmd.Version;
+import java.util.concurrent.Callable;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-public class Main {
+@Command(subcommands = {
+    Migrate.class,
+    Version.class,
+    Iadt.class}
+)
+public class Main implements Callable<Integer> {
 
-  public static void main(String[] args) throws IOException, TemplateModelException {
+  @Option(names = "--help", usageHelp = true, description = "display this help and exit")
+  boolean help;
 
-    String inDirectory = args[0];
-    String pattern = args[1];
-    String outDirectory = args[2];
+  public static void main(String[] args) {
+    CommandLine commandLine = new CommandLine(new Main());
 
-    System.out.println(Arrays.asList(args));
+    commandLine.registerConverter(com.github.zafarkhaja.semver.Version.class,
+        com.github.zafarkhaja.semver.Version::valueOf);
 
-    Multimap<Path, Requirement> results = LegacyAsciidocParser.from(inDirectory, pattern);
+    int exitCode = commandLine.execute(args);
+    System.exit(exitCode);
+  }
 
-    AsciidocWriter.generate(results, Paths.get(inDirectory), Paths.get(outDirectory));
+  @Override
+  public Integer call() {
+    return 0;
   }
 }
