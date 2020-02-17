@@ -32,11 +32,6 @@ public class Generator {
 
   private static final Configuration CFG;
 
-  private final Template template;
-  private final Path inPrefix;
-  private final Path outPrefix;
-  private final Optional<String> outExtension;
-
   static {
     LOGGER = LoggerFactory.getLogger(Generator.class);
     CFG = new Configuration(Configuration.VERSION_2_3_29);
@@ -48,6 +43,11 @@ public class Generator {
     CFG.setWrapUncheckedExceptions(true);
     CFG.setFallbackOnNullLoopVariable(false);
   }
+
+  private final Template template;
+  private final Path inPrefix;
+  private final Path outPrefix;
+  private final Optional<String> outExtension;
 
   private Generator(String tplPath, Path inPrefix,
       Path outPrefix, Optional<String> outExtension) throws IOException {
@@ -83,9 +83,15 @@ public class Generator {
       Path inPath = entry.getKey();
       Collection<Requirement> requirements = entry.getValue();
 
-      // Compute relative path
-      String relativePath = inPrefix
-          .relativize(inPath).toString();
+      String relativePath = "";
+      if(inPrefix.toFile().isFile()) {
+        relativePath = inPath.getFileName().toString();
+      }
+      else {
+        // Compute relative path
+        relativePath = inPrefix
+            .relativize(inPath).toString();
+      }
 
       if (this.outExtension.isPresent()) {
         String inExtension = Files.getFileExtension(inPath.toString());

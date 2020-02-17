@@ -2,40 +2,50 @@
 
 <#macro requirement req>
 <#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.data.Requirement" -->
-:ref: ${req.ref}
-:summary: ${req.summary}
-:subsystem: ${req.subsystems?join(", ")}
-:verification: <#list req.verification as verif>${verif.abrv}<#sep>, </#list>
-:compliance: ${req.compliance.abrv}
-:version: ${req.version}
-:type: ${req.type}
-:target: ${req.target}
+  :ref: ${req.ref}
+  :summary: ${req.summary}
+  :subsystem: ${req.subsystems?join(", ")}
+  :verification: <#list req.verification as verif>${verif.abrv}<#sep>, </#list>
+  :compliance: ${req.compliance.abrv}
+  :version: ${req.version}
+  :type: ${req.type}
+  :target: ${req.target}
 
-[.requirement, cols=8*, ref="{ref}", summary="{summary}", subsystem="{subsystem}", verification="{verification}", compliance="{compliance}", version="{version}", subsystem="{subsystem}", type="{type}", target="{target}"]
-|====
+    <#assign total_cols = 8>
+    <#if req.satisfies?size == 0 >
+        <#assign total_cols = 6>
+    </#if>
 
-6+s|{ref}/{version}: {summary} ({type})
+    <#assign body_cols = total_cols>
+    <#assign note_cols = total_cols - 1>
 
-s|Version
-^|{target}
+  [.requirement, cols=${total_cols}*, ref="{ref}", summary="{summary}", subsystem="{subsystem}", verification="{verification}", compliance="{compliance}", version="{version}", subsystem="{subsystem}", type="{type}", target="{target}"]
+  |====
 
-.2+.^s|Satisfies
-5.2+a|<#list req.satisfies as parent>
-  * ${parent}
-</#list>
+  6+s|{ref}/{version}: {summary} ({type})
 
-s|Verification
-^|{verification}
+  s|Version
+  ^|{target}
 
-s|Compliance
-^|{compliance}
+    <#if req.satisfies?size gt 0 >
+      .2+.^s|Satisfies
+      5.2+a|<#list req.satisfies as parent>
+      * ${parent}
+    </#list>
+    </#if>
 
-8+a|${req.body}
+  s|Verification
+  ^|{verification}
 
-.^s|Note
-7+a|${req.note}
+  s|Compliance
+  ^|{compliance}
 
-|====
+    ${body_cols}+a|${req.body}
+
+  .^s|Note
+    ${note_cols}+a|${req.note}
+
+  |====
 </#macro>
 
 

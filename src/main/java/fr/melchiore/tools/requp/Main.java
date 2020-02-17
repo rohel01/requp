@@ -2,6 +2,7 @@ package fr.melchiore.tools.requp;
 
 import fr.melchiore.tools.requp.cmd.Iadt;
 import fr.melchiore.tools.requp.cmd.Migrate;
+import fr.melchiore.tools.requp.cmd.Simplify;
 import fr.melchiore.tools.requp.cmd.Version;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
@@ -11,7 +12,8 @@ import picocli.CommandLine.Option;
 @Command(subcommands = {
     Migrate.class,
     Version.class,
-    Iadt.class}
+    Iadt.class,
+    Simplify.class}
 )
 public class Main implements Callable<Integer> {
 

@@ -1,13 +1,13 @@
 package fr.melchiore.tools.requp.parser;
 
+import static fr.melchiore.tools.requp.parser.ParserUtils.isInlineComment;
+
 import com.google.common.base.Charsets;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Streams;
-import fr.melchiore.tools.requp.data.Compliance;
 import fr.melchiore.tools.requp.data.Requirement;
-import fr.melchiore.tools.requp.data.Verification;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -20,7 +20,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,7 +82,7 @@ public class LegacyAsciidocParser {
       Set<String> files = new HashSet<>();
 
       // We use mutable entry since we might update them when looking for comments
-      List<SectionLocation> sectionLocations = Streams
+      List<NodeLocation> sectionLocations = Streams
           .zip(blocks.stream(), blocks.stream().skip(1), AbstractMap.SimpleEntry::new)
           .map(e -> {
             Cursor slStart = e.getKey().getSourceLocation();
@@ -94,7 +93,7 @@ public class LegacyAsciidocParser {
             int start = slStart.getLineNumber() + 1; // + 1 to skip the section header
             int end = slEnd.getLineNumber() - 1; // -1 to skip section attribute
 
-            return new SectionLocation(e.getKey(), start, end);
+            return new NodeLocation(e.getKey(), start, end);
           }).collect(Collectors.toList());
 
       if (!sectionLocations.isEmpty()) {
@@ -112,7 +111,7 @@ public class LegacyAsciidocParser {
         // Add end entry for last section
         Section lastSection = Iterables.getLast(blocks);
         sectionLocations.add(
-            new SectionLocation(lastSection,
+            new NodeLocation(lastSection,
                 lastSection.getSourceLocation().getLineNumber() + 1,
                 fileLines.size()));
 
@@ -124,52 +123,12 @@ public class LegacyAsciidocParser {
         Map<Object, Object> map = new HashMap<>();
         map.put("context", ":admonition");
 
-        for (SectionLocation sl : sectionLocations) {
+        for (NodeLocation sl : sectionLocations) {
 
-          Section requirement = sl.getSection();
+          Section requirement = (Section) sl.getNode();
 
-          String ref = (String) requirement.getAttribute("ref");
-          String summary = (String) requirement.getAttribute("summary");
-          String[] subsystem = ((String) requirement.getAttribute("subsystem", ""))
-              .split(",\\s?");
-          String[] verification = ((String) requirement
-              .getAttribute("verification", ""))
-              .split(",\\s?");
-
-          List<Block> commentBlocks = requirement.findBy(map)
-              // WARNING: findBy is recursive so nested admonitions might be returned
-              .stream()
-              .filter(sn -> sn.getParent() == requirement)
-              .map(Block.class::cast)
-              .collect(Collectors.toList());
-
-          Optional<String> comments = Optional.empty();
-          if (!commentBlocks.isEmpty()) {
-            List<String> lines = new ArrayList<>();
-
-            Block firstComment = commentBlocks.get(0);
-            sl.end =
-                firstComment.getSourceLocation().getLineNumber() - (
-                    isInlineComment(firstComment) ? 1
-                        : 2);
-
-            for (Block admonition : commentBlocks) {
-              /*
-               * We only support inline admonition blocks for now
-               */
-              if (!isInlineComment(admonition)) {
-                logger.error(
-                    "Ignoring unsupported " + admonition.getCaption()
-                        + " admonition block for " + ref + " at "
-                        + admonition.getSourceLocation());
-                continue;
-              }
-
-              lines.add(admonition.getSource());
-            }
-
-            comments = Optional.of(String.join("\n\n", lines));
-          }
+          Requirement attributes = ParserUtils.readAttributes(requirement);
+          Optional<String> comments = ParserUtils.findComments(sl);
 
           // We need to remove attribute definitions
           sl.end = IntStream.range(sl.start, sl.end)
@@ -200,20 +159,16 @@ public class LegacyAsciidocParser {
             // Add an empty line to circumvent a nested table formatting atefact
             // when a table is the last element of a cell
             List<StructuralNode> subBlocks = requirement.getBlocks();
-            if(!subBlocks.isEmpty() && Iterables.getLast(subBlocks) instanceof Table)
+            if (!subBlocks.isEmpty() && Iterables.getLast(subBlocks) instanceof Table) {
               lines.add("{empty}");
+            }
           }
 
           String body = String.join("\n", lines);
 
-          result.add(new Requirement(ref, "1", "FUN", summary, Collections.emptyList(),
-              Arrays.asList(subsystem),
-              Arrays.stream(verification)
-                  .filter(s -> !s.trim().isEmpty() && !s.equalsIgnoreCase("TBD"))
-                  .map(Verification::fromAbrv)
-                  .collect(
-                      Collectors.toList()),
-              Compliance.UNSET, "", body, comments.orElse("")));
+          result.add(
+              Requirement.fromAttributes(attributes,
+                  Collections.emptyList(), body, comments.orElse("")));
         }
       } else {
         logger.warn("No requirements found in " + file);
@@ -241,8 +196,11 @@ public class LegacyAsciidocParser {
       return result;
     }
 
+    String glob = "glob:" + path + globPattern;
     PathMatcher matcher =
-        FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
+        FileSystems.getDefault().getPathMatcher(glob);
+
+    logger.debug("Glob pattern is: " + glob);
 
     SimpleFileVisitor<Path> treeVisitor = new SimpleFileVisitor<Path>() {
       @Override
@@ -266,9 +224,5 @@ public class LegacyAsciidocParser {
     Files.walkFileTree(startingPath, treeVisitor);
 
     return result;
-  }
-
-  static private boolean isInlineComment(Block comment) {
-    return !comment.getSource().isEmpty() || comment.getBlocks().isEmpty();
   }
 }

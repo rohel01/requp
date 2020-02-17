@@ -1,19 +1,19 @@
 package fr.melchiore.tools.requp.parser;
 
-import org.asciidoctor.ast.Section;
+import org.asciidoctor.ast.StructuralNode;
 
-class SectionLocation {
+class NodeLocation {
 
-  Section getSection() {
-    return section;
+  StructuralNode getNode() {
+    return node;
   }
 
-  final Section section;
+  final StructuralNode node;
   int start;
   int end;
 
-  SectionLocation(Section section, int start, int end) {
-    this.section = section;
+  NodeLocation(StructuralNode node, int start, int end) {
+    this.node = node;
     this.start = start;
     this.end = end;
   }

@@ -1,6 +1,8 @@
 package fr.melchiore.tools.requp.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Requirement {
 
@@ -56,6 +58,21 @@ public class Requirement {
         verification, compliance, target, body, "");
   }
 
+  public static Requirement fromAttributes(Requirement attributes,
+      List<String> satisfies, String body, String note) {
+    return new Requirement(
+        attributes.ref,
+        attributes.version,
+        attributes.type,
+        attributes.summary,
+        satisfies,
+        attributes.subsystems,
+        attributes.verification,
+        attributes.compliance,
+        attributes.target,
+        body, note);
+  }
+
   public String getRef() {
     return ref;
   }
@@ -94,6 +111,10 @@ public class Requirement {
 
   public String getBody() {
     return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
   }
 
   public String getNote() {

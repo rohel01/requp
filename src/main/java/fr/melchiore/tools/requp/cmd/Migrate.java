@@ -1,8 +1,8 @@
 package fr.melchiore.tools.requp.cmd;
 
 import com.google.common.collect.Multimap;
-import fr.melchiore.tools.requp.gen.Generator;
 import fr.melchiore.tools.requp.data.Requirement;
+import fr.melchiore.tools.requp.gen.Generator;
 import fr.melchiore.tools.requp.parser.LegacyAsciidocParser;
 import java.nio.file.Path;
 import java.nio.file.Paths;

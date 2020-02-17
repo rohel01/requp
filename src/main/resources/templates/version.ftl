@@ -4,15 +4,15 @@
 <#macro requirement req versions>
 <#-- @ftlvariable name="req" type="fr.melchiore.tools.requp.data.Requirement" -->
 <#-- @ftlvariable name="versions" type="java.util.List<com.github.zafarkhaja.semver.Version>" -->
-|${req.ref}: ${req.summary}
-  <#if req.target?trim?length == 0 >
-${versions?size}+^|icon:question[]
-  <#else>
-<#list versions as version>
-^.^|<#if version.satisfies(req.target)>icon:check[]</#if>
-</#list>
+  |${req.ref}: ${req.summary}
+    <#if req.target?trim?length == 0 >
+        ${versions?size}+^|icon:question[]
+    <#else>
+        <#list versions as version>
+          ^.^|<#if version.satisfies(req.target)>icon:check[]</#if>
+        </#list>
 
-  </#if>
+    </#if>
 </#macro>
 
 :icons: font
@@ -25,11 +25,11 @@ ${versions?size}+^|icon:question[]
 ${versions?size}+^h|Version
 
 <#list versions as version>
-^.^h|${version.majorVersion}.${version.minorVersion}
+  ^.^h|${version.majorVersion}.${version.minorVersion}
 </#list>
 
 <#list requirements as req>
-<@requirement req versions/>
+    <@requirement req versions/>
 
 </#list>
 

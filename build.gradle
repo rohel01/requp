@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group 'fr.melchiore.tools'
@@ -15,6 +15,22 @@ repositories {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            exclude '**/AsciidocHtmlNodeRenderer.java'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'fr.melchiore.tools.requp.Main'
+        )
+    }
+}
+
 dependencies {
     compile 'com.google.guava:guava:28.0-jre'
     compile 'org.slf4j:slf4j-api:1.7.28'
@@ -23,11 +39,5 @@ dependencies {
     compile 'org.freemarker:freemarker:2.3.29'
     compile 'com.github.zafarkhaja:java-semver:0.10.0'
     compile 'info.picocli:picocli:4.0.4'
-    //compile 'com.vladsch.flexmark:flexmark-all:0.40.32'
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'fr.melchiore.tools.requp.Main'
-    }
+    compile 'com.vladsch.flexmark:flexmark-all:0.50.32'
 }
